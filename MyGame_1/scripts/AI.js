@@ -1,13 +1,13 @@
-import { Commands } from "./input";
-import { Dead, Hit, Shielding } from "./playerStates";
+import { Commands } from "./input.js";
+import { Dead, Hit, Shielding } from "./playerStates.js";
 
 export class QLearningWithFunctionApprox {
     constructor(game) {
         this.game = game;
         this.yourPlayer = game.player2;
         this.enemyPlayer = game.player1;
-        this.input = game.input;
-        this.actions = Commands;
+        this.input = game.inputPlayer_2;
+        this.actions = Object.values(Commands);
         this.features = [];
         this.previousFeatures = [];
         this.previousAction;
@@ -17,14 +17,14 @@ export class QLearningWithFunctionApprox {
         this.discountFactor = 0.9; 
         this.explorationRate = 1; 
         this.explorationDecay = 0.995;
-
+        this.getStateFeatures();
+        
         this.yourPlayer.AIcalculateRewardDelegate.addFunction(() => this.gotHit()); // got hit event
         this.enemyPlayer.AIcalculateRewardDelegate.addFunction(() => this.enemyHit()); // enemy hit event
         this.yourPlayer.AIupdateDelegate.addFunction(() => this.update()); // update ai
     }
-
-    predictQValue(action,features) {
-        
+    
+    predictQValue(action,features) { 
         if (!this.weights[action]) {
             this.weights[action] = new Array(features.length).fill(0);
         }
@@ -38,7 +38,7 @@ export class QLearningWithFunctionApprox {
     }
     getStateFeatures() {      
         const projectilesInfo = this.enemyPlayer.attacks.flatMap(p => [p.x, p.y, p.width ,p.height ,p.speed]);
-        array = [
+        let array = [
             this.yourPlayer.y,   // your location
             this.yourPlayer.x,   
             this.yourPlayer.direction,        
@@ -60,7 +60,7 @@ export class QLearningWithFunctionApprox {
 
     updateWeights(features,action, reward, nextFeatures) {
         const nextBestAction = this.getBestAction(nextFeatures);
-        const nextQValue = this.predictQValue(nextBestAction);
+        const nextQValue = this.predictQValue(nextBestAction,nextFeatures);
 
         const currentQValue = this.predictQValue(action,features);
 
@@ -113,17 +113,14 @@ export class QLearningWithFunctionApprox {
         let action;
         if(this.enemyPlayer.currentState === Hit) reward = 10;
         else if(this.enemyPlayer.currentState === Dead) reward = 20;
-        else if(this.enemyPlayer.currentState === Shield) reward = 4;
+        else if(this.enemyPlayer.currentState === Shielding) reward = 4;
 
         if(this.featuresTable.has(this.yourPlayer.punch.AIid)){          
             previousFeatures = this.featuresTable.get(this.yourPlayer.punch.AIid);
             action = Commands.PUNCH;
         }
-        else{ // shoot hit (you cant know in advance if a shoot will the enemy 
+        else{ // shoot hit (you cant know in advance if a shoot will hit the enemy 
               // so the reward is being calculated based only on the direction of the shoot)
-
-            //previousFeatures = this.previousFeatures;
-            //action = Commands.SHOOT;
             return;
         } 
 
@@ -154,7 +151,7 @@ export class QLearningWithFunctionApprox {
         this.yourPlayer.punch.AIid = this.game.gameTime;
        }
        else if(action === Commands.SHOOT){
-        this.updateWeights(previousFeatures,
+        this.updateWeights(this.previousFeatures,
             Commands.SHOOT,                 
             this.calculateShootReward(),                        
             this.features);            

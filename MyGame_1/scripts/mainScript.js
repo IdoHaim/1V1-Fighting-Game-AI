@@ -3,6 +3,7 @@ import { MainMenu,PauseMenu} from "./menus.js"
 import { InputHandler,InputController,inputStates } from "./input.js";
 import { Player, imageSelector, playerTypes } from "./player.js";
 import { UI } from "./UI.js";
+import { QLearningWithFunctionApprox } from "./AI.js";
 
 
 window.addEventListener('load', function() {
@@ -13,7 +14,7 @@ window.addEventListener('load', function() {
   
     
     class Game {
-      constructor(width, height) {
+      constructor(width, height ,player2state) {
         this.width = width;
         this.height = height;
         this.groundMargin = 70;
@@ -23,8 +24,9 @@ window.addEventListener('load', function() {
         imageSelector.init(this.player1, this.player2);
         this.input = new InputHandler(this);
         this.inputPlayer_1 = new InputController(this, inputStates.PLAYER_1);
-        this.inputPlayer_2// = new InputController(this, inputStates.PLAYER_2);
+        this.inputPlayer_2 = new InputController(this, player2state);
         this.Ai;
+        if(player2state===inputStates.AI) this.Ai = new QLearningWithFunctionApprox(this);
         this.ui = new UI(this);
         this.countDownInterval = 30;
         this.debug = false;
@@ -111,9 +113,16 @@ window.addEventListener('load', function() {
 
   /////////////////////////////////////////////////////
   
-  const game = new Game(canvas.width, canvas.height);
-  const mainMenu = new MainMenu(game);
-  
+  const mainMenu = new MainMenu(canvas.width, canvas.height);
+  mainMenu.draw(ctx);
+
+  let game = null;
+
+  mainMenu.startGame().then(() => {
+    game = new Game(canvas.width, canvas.height, mainMenu.selectedOption);
+    game.gameStarted = true;
+  });
+
   let lastTime = 0;
 
   function animate(timeStamp) {
@@ -122,9 +131,9 @@ window.addEventListener('load', function() {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (!game.gameStarted) {
+    if (!game || !game.gameStarted) {
       mainMenu.draw(ctx);
-    } 
+    }
       else if(game.isPaused){
         game.pauseMenu.draw(ctx); 
       }

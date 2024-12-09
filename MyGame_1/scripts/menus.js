@@ -1,12 +1,12 @@
 //import { playerTypes } from "./player.js";      for next version
-import { QLearningWithFunctionApprox } from "./AI.js";
-import { inputStates, InputController } from "./input.js";
+import { inputStates } from "./input.js";
 
 
 
 export class MainMenu {
-    constructor(game) {
-      this.game = game;
+    constructor(width,height) {
+      this.width = width;
+      this.height = height;
       this.selectedOption = null;
       this.backgroundImage = document.getElementById('mainMenuImg');
       
@@ -38,15 +38,7 @@ export class MainMenu {
     this.option2Button.innerHTML = "AI";
     document.body.appendChild(this.option2Button);
 
-    // Events
-    this.startButton.addEventListener("click", () => {
-        if(this.selectedOption != null){
-            this.game.startGame();
-            this.game.inputPlayer_2 = new InputController(this.game, this.selectedOption);
-            this.hide(); 
-        }
-      });
-
+    // Events 
     this.option1Button.addEventListener("click", () => {
       this.selectButton(this.option1Button, this.option2Button);
       this.selectedOption = inputStates.PLAYER_2;
@@ -55,10 +47,23 @@ export class MainMenu {
     this.option2Button.addEventListener("click", () => {
       this.selectButton(this.option2Button, this.option1Button);
       this.selectedOption = inputStates.AI;       
-      this.game.Ai = new QLearningWithFunctionApprox(this.game);
     });
-
-
+  }
+    
+    waitForStartButtonClick() {
+      return new Promise((resolve) => {
+        this.startButton.addEventListener("click", () => {
+          if (this.selectedOption != null) {
+            this.hide();
+            resolve();
+          } else {
+            alert("Please select an option first!");
+          }
+        });
+      });
+    }
+    async startGame() {
+      await this.waitForStartButtonClick();
     }
 
     selectButton(selectedButton, otherButton) {
@@ -77,10 +82,10 @@ export class MainMenu {
       this.option1Button.style.display = "block";
       this.option2Button.style.display = "block";
     }
-  
+    
     draw(context) {
      // Main Menu Background 
-     context.drawImage(this.backgroundImage, 0, 0, this.game.width, this.game.height);
+     context.drawImage(this.backgroundImage, 0, 0, this.width, this.height);
    
      // Game Headline
      context.font = '80px Roboto';
@@ -89,7 +94,7 @@ export class MainMenu {
      context.shadowOffsetX = 2;
      context.shadowOffsetY = 2;
      context.shadowColor = 'black';
-     context.fillText('Fighting Game', this.game.width / 2, this.game.height / 4);
+     context.fillText('Fighting Game', this.width / 2, this.height / 4);
     }
   }
   

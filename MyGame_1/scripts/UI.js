@@ -12,7 +12,6 @@ export class UI{
           context.shadowOffsetX = 2;
           context.shadowOffsetY = 2;
           context.shadowColor = 'black';
-          //context.font = this.fontSize + 'px' + this.fontFamily;               
           context.font = '20px Roboto';
           const barWidth = 180; 
           const barHeight = 30; 

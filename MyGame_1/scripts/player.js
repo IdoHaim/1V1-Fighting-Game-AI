@@ -144,7 +144,7 @@ export class Player{
             this.shield.color = 'blue';
         }
 
-        //sprite animation
+        // sprite animation
         if(this.frameTimer > this.frameInterval){
             this.frameTimer = 0;
             if(this.frameX < this.maxFrame) this.frameX++;
@@ -244,11 +244,11 @@ export class Player{
         }
         else{
             if(this.health <= attack.power){
-                this.setState(states.DEAD,0) // this.setState(7,0);
+                this.setState(states.DEAD,0) 
                 this.game.finishGame();
             }
             else
-            this.setState(states.HIT,0) // this.setState(6,0);
+            this.setState(states.HIT,0) 
 
             this.health -= attack.power;
         }
