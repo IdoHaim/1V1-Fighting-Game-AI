@@ -1,5 +1,6 @@
 import { Commands } from "./input.js";
 import { Dead, Hit, Shielding } from "./playerStates.js";
+import { states } from "./playerStates.js";
 
 export class QLearningWithFunctionApprox {
     constructor(game) {
@@ -17,12 +18,47 @@ export class QLearningWithFunctionApprox {
         this.discountFactor = 0.9; 
         this.explorationRate = 1; 
         this.explorationDecay = 0.995;
-        this.getStateFeatures();
+
+        this.isDataSaved = false;
+        this.loadAIData(); // Load saved AI data on initialization
         
         this.yourPlayer.AIcalculateRewardDelegate.addFunction(() => this.gotHit()); // got hit event
         this.enemyPlayer.AIcalculateRewardDelegate.addFunction(() => this.enemyHit()); // enemy hit event
         this.yourPlayer.AIupdateDelegate.addFunction(() => this.update()); // update ai
     }
+
+    saveAIData() {
+        const aiData = {
+            weights: this.weights,
+            explorationRate: this.explorationRate,
+            features: this.features,
+            previousAction: this.previousAction,
+            previousFeatures: this.previousFeatures
+        };
+    
+        const jsonData = stringifyWithoutCircular(aiData);
+    
+
+        localStorage.setItem('aiData', jsonData);
+        console.log('saved! \n',aiData);
+    }
+    
+    loadAIData() {
+        const jsonData = localStorage.getItem('aiData');
+        if (jsonData) {
+            const aiData = JSON.parse(jsonData);
+    
+            this.weights = aiData.weights;
+            this.explorationRate = aiData.explorationRate;
+            this.features = aiData.features;
+            this.previousAction = aiData.previousAction;
+            this.previousFeatures = aiData.previousFeatures;
+    
+
+        }
+    }
+    
+    
     
     predictQValue(action,features) { 
         if (!this.weights[action]) {
@@ -36,6 +72,7 @@ export class QLearningWithFunctionApprox {
 
         return qValue;
     }
+
     getStateFeatures() {      
         const projectilesInfo = this.enemyPlayer.attacks.flatMap(p => [p.x, p.y, p.width ,p.height ,p.speed]);
         let array = [
@@ -51,7 +88,7 @@ export class QLearningWithFunctionApprox {
             this.yourPlayer.energy,
             this.enemyPlayer.health,
             this.enemyPlayer.energy,
-            this.enemyPlayer.currentState,
+            states[this.enemyPlayer.currentState.state],
             projectilesInfo  // every enemy projectile location
         ];
         this.previousFeatures = this.features;
@@ -65,8 +102,12 @@ export class QLearningWithFunctionApprox {
         const currentQValue = this.predictQValue(action,features);
 
         for (let i = 0; i < features.length; i++) {
-            this.weights[action][i] += this.learningRate * (reward + this.discountFactor * nextQValue - currentQValue) * features[i];
-        }
+            let value = this.weights[action][i];
+            if (isNaN(value)|| value === null || value === undefined) {
+                this.weights[action][i] = 0; 
+            }
+                this.weights[action][i] += this.learningRate * (reward + this.discountFactor * nextQValue - currentQValue) * features[i];
+            }
     }
 
     getBestAction(features) {
@@ -161,3 +202,18 @@ export class QLearningWithFunctionApprox {
     }
 }
 
+
+function stringifyWithoutCircular(obj) {
+    const cache = new Set();
+    const result = JSON.stringify(obj, (key, value) => {
+        if (typeof value === 'object' && value !== null) {
+            if (cache.has(value)) {
+                return;
+            }
+            cache.add(value);
+        }
+        return value;
+    });
+    cache.clear();
+    return result;
+}

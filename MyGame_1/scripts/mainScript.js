@@ -18,7 +18,7 @@ window.addEventListener('load', function() {
         this.width = width;
         this.height = height;
         this.groundMargin = 70;
-        this.background = new Background(this);
+        this.background = new Background(this.width,this.height);
         this.player1 = new Player(this, playerTypes.fire, true);
         this.player2 = new Player(this, playerTypes.fire, false);
         imageSelector.init(this.player1, this.player2);
@@ -46,6 +46,11 @@ window.addEventListener('load', function() {
         
         if(this.gameOver)
         {
+          if(!this.Ai.isDataSaved){
+            this.Ai.saveAIData();
+            this.Ai.isDataSaved = true;
+          }
+
           if(this.Looser.frameX===this.Looser.maxFrame) 
             this.stopLooserAnimatiom = true;
             
