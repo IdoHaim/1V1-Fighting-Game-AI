@@ -40,7 +40,7 @@ export class QLearningWithFunctionApprox {
     
 
         localStorage.setItem('aiData', jsonData);
-        console.log('saved! \n',aiData);
+        
     }
     
     loadAIData() {
