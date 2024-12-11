@@ -10,7 +10,8 @@ export const Commands = {
 export const inputStates = {
     PLAYER_1 : 0,
     PLAYER_2 : 1,
-    AI : 2
+    AI : 2,
+    TRAINER : 3
 }
 
 export class InputHandler {
@@ -118,7 +119,7 @@ export class InputController {
             this.hashKeys.set('KeyV', Commands.PUNCH);
             this.hashKeys.set('KeyB', Commands.SHOOT);
             this.hashKeys.set('KeyN', Commands.SHIELD);
-        } else { // (this.inputState === inputStates.AI)
+        } else { // inputState = AI/TRAINER
             this.isAvailableForAICommands = true;
         }
     }

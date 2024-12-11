@@ -314,7 +314,6 @@ export class Dead extends State {
         this.player.maxFrame = 7;
         this.player.frameY = 4;
         this.game.Looser = this.player;
-        console.log('a')
     }
     handleInput(input){       
        
