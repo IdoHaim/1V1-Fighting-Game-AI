@@ -1,9 +1,9 @@
-"# 1V1-Fighting-Game-AI"
-The AI model in this project uses Reinforcement Learning (Q-Learning) to enhance the behavior of the AI characters during gameplay. The model is able to make decisions and improve its actions based on the rewards it receives. However, the current implementation does not store the knowledge or learned data across sessions. This means that every time the game is restarted, the AI starts from scratch and must relearn everything from the beginning. Ideally, the AI should save its learned knowledge (such as Q-values) to a persistent storage, allowing it to continue learning and improving over time, even after the game is closed or restarted.
+"# 1V1-Fighting-Game-AI" About: This is a 1v1 sprite animation fighting game that uses AI to operate the computer's character. The AI model in this project uses Reinforcement Learning (Q-Learning) to enhance the behavior of the AI characters during gameplay. The model is able to make decisions and improve its actions based on the rewards it receives.
 
-Keys:
-Esc | pause
+Updates: *trainer mode has been added. for activation go to "mainScript.js" and change "AI_Trainer_Mode" value to "true", this mode automates the training of the AI. *AI's data is now saved in the local storage. *important bug fixes were made to the AI.
 
-PLAYER 1: Arrow up | jumping Arrow right ,Arrow left | running " < " | punching " > " | fire ball " ? " | shield
+Keys: Esc | pause
 
-PLAYER 2: " W " | jumping " A " ," D " | running " V " | punching " B " | fire ball " N " | shield
+PLAYER 1: Arrow up | jumping Arrow right ,Arrow left | running " < " | punching " > " | fire ball " ? " | sheild
+
+PLAYER 2: " W " | jumping " A " ," D " | running " V " | punching " B " | fire ball " N " | sheild
