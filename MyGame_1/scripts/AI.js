@@ -26,7 +26,7 @@ export class QLearningWithFunctionApprox {
         this.learningRate = 0.1;
         this.discountFactor = 0.9; 
         this.explorationRate = 1; 
-        this.explorationDecay = 0.99999999; 
+        this.explorationDecay = 0.99999; // adjust to your desired ratio
         this.maxWeightValue = 1e7; 
         this.minWeightValue = -1e7;
 
