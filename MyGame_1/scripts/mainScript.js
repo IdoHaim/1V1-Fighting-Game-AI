@@ -13,21 +13,23 @@ window.addEventListener('load', function() {
   canvas.width = 1600;
   canvas.height = 800;
 
-  const AI_Trainer_Mode = false;    // Change this to   true   if you want to train the AI!!!
+  const AI_Trainer_Mode = true;    // Change this to   true   if you want to train the AI!!!
   
     
     class Game {
       constructor(width, height, player1state, player2state) {
         this.width = width;
         this.height = height;
+        this.player1state = player1state;
+        this.player2state = player2state;
         this.groundMargin = 70;
         this.background = new Background(this.width,this.height);
         this.player1 = new Player(this, playerTypes.fire, true);
         this.player2 = new Player(this, playerTypes.fire, false);
         imageSelector.init(this.player1, this.player2);
         this.input = new InputHandler(this);
-        this.inputPlayer_1 = new InputController(this, player1state);
-        this.inputPlayer_2 = new InputController(this, player2state);
+        this.inputPlayer_1 = new InputController(this, this.player1state);
+        this.inputPlayer_2 = new InputController(this, this.player2state);
 
         this.Ai;
         if(player2state===inputStates.AI) 
@@ -35,7 +37,7 @@ window.addEventListener('load', function() {
 
         this.AiTrainer;
         if(AI_Trainer_Mode) 
-          this.AiTrainer = new AI_trainer(this,this.player1);
+          this.AiTrainer = new AI_trainer(this,this.player1,1);
 
         this.ui = new UI(this);
         this.countDownInterval = 30;
@@ -56,7 +58,7 @@ window.addEventListener('load', function() {
         
         if(this.gameOver)
         {
-          if(!this.Ai.isDataSaved){
+          if(this.Ai && !this.Ai.isDataSaved){
             this.Ai.saveAIData();
             this.Ai.isDataSaved = true;
           }
@@ -133,7 +135,7 @@ window.addEventListener('load', function() {
   
 
   if(AI_Trainer_Mode){ // trainer mode
-    game = new Game(canvas.width, canvas.height, inputStates.TRAINER, inputStates.AI);
+    game = new Game(canvas.width, canvas.height, inputStates.BOT, inputStates.AI);
     game.gameStarted = true;
   }
 

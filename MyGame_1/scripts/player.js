@@ -1,5 +1,5 @@
 import { Standing,Running,Jumping,Punching,Shooting,Shielding,Hit,Dead,states } from "./playerStates.js";
-import { Commands, delegateInput } from "./input.js";
+import { Commands, delegateInput, inputStates } from "./input.js";
 import { Projectile, Punch, Shield } from "./abilities.js";
 
 export const playerTypes = {
@@ -13,6 +13,12 @@ export class Player{
         this.width = 70; 
         this.height = 150;
 
+        // name
+        let playerNumber;
+        if(isPlayer1) playerNumber = this.game.player1state;
+        else playerNumber = this.game.player2state;
+        let keys = Object.keys(inputStates);
+        this.name = keys.find(key => inputStates[key] === playerNumber);
         // animation
         this.offsetY = 60;
         this.offsetX = 60;
@@ -73,10 +79,15 @@ export class Player{
         // AI
         this.AIupdateDelegate = new delegateInput();
         this.AIcalculateRewardDelegate = new delegateInput();
+        this.AIupdateRegulator = 0;
     }
 
     update(input,deltaTime){
-        this.AIupdateDelegate.runDelegate();
+        if(this.AIupdateRegulator >= 10){ // Prevents the ai from being overwhelmed with information
+            this.AIupdateDelegate.runDelegate();
+            this.AIupdateRegulator = 0;
+        }
+        else this.AIupdateRegulator++;
 
         this.currentState.handleInput(input);
 
@@ -223,13 +234,11 @@ export class Player{
             this.energy -= this.punch.energyCost;
         }
         else this.punch.isActive = false;
-
     }
     executeShoot(){      
             let projectile = new Projectile(this.game, this);
             this.attacks.push(projectile);
             this.energy -= projectile.energyCost;
-            
     }
     executeShield(isActive){
         if(isActive){
@@ -252,10 +261,16 @@ export class Player{
 
             this.health -= attack.power;
         }
-        this.AIcalculateRewardDelegate.runDelegate();
+        
+        this.AIcalculateRewardDelegate.runDelegate(attack);
     }
     isActionAble(actionClass){
-        return this.energy >= actionClass.ENERGY_COST; 
+        
+        let isAttackActionAble = true;
+        if(actionClass === Punch) isAttackActionAble = !this.isLoadedPunch;
+        else if(actionClass === Projectile) isAttackActionAble = !this.isLoadedProjectile;
+        
+        return this.energy >= actionClass.ENERGY_COST && isAttackActionAble; 
     }
 
     initImage(){
@@ -289,6 +304,4 @@ export class imageSelector{
         player1.initImage();
         player2.initImage();
     }
-    
-  }
- 
+}

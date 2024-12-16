@@ -52,7 +52,7 @@ function drawPlayerHUD(context, x, y, width, height, playerName, player) {
 context.fillStyle = 'white';
 context.textAlign = 'center';
 context.font = '20px Arial';
-context.fillText(playerName, x + width / 2, y - 5);
+context.fillText(player.name, x + width / 2, y - 5);
 
 // health
 context.fillStyle = 'gray';

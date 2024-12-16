@@ -11,7 +11,7 @@ export const inputStates = {
     PLAYER_1 : 0,
     PLAYER_2 : 1,
     AI : 2,
-    TRAINER : 3
+    BOT : 3
 }
 
 export class InputHandler {
@@ -39,7 +39,7 @@ export class InputHandler {
             } else if (e.code === 'Escape' && this.game.gameStarted) {
                 this.game.isPaused = !this.game.isPaused;
                 this.game.pauseMenu.hide();
-            } //else if (e.code === 'KeyQ') this.game.debug = !this.game.debug;   // show heat boxes
+            } else if (e.code === 'KeyQ') this.game.debug = !this.game.debug;   // show heat boxes
         });
 
         window.addEventListener('keyup', e => {
@@ -70,9 +70,9 @@ export class delegateInput {
         this.functionsList.push(func);
     }
 
-    runDelegate() {
+    runDelegate(action) {
         this.functionsList.forEach(e => {
-            e();
+            e(action);
         });
     }
 }

@@ -1,11 +1,13 @@
 import { Commands } from "./input.js";
 
 export class AI_trainer{
-    constructor(game,trainerPlayer) {
+    constructor(game,trainerPlayer,difficulty) {
         this.game = game;
         this.yourPlayer = trainerPlayer;
         this.enemyPlayer;
         this.input;
+        this.difficulty = difficulty; // a number between 1-0    
+
         if(trainerPlayer===game.player1){
             this.enemyPlayer = game.player2;
             this.input = game.inputPlayer_1;
@@ -18,7 +20,7 @@ export class AI_trainer{
         this.actions = Object.values(Commands);
         this.yourPlayer.AIupdateDelegate.addFunction(() => this.update());
     }
-   update(){ 
+    update(){ 
         if(this.game.Ai.isDataSaved){ // restard the game when its over and the data was saved
             this.game.goToMainMenu();
         }
@@ -33,32 +35,40 @@ export class AI_trainer{
             if(distance<closestThreat) closestThreat = distance;
         });
  
-        if(closestThreat <= this.yourPlayer.width + this.yourPlayer.offsetX){            
-            action = this.chooseRandomAction(Commands.SHIELD,null,0.7); // making some of the shielding attempts fail on purpose
+        if(closestThreat <= this.yourPlayer.width + 100){            
+            action = this.chooseRandomAction(Commands.SHIELD,null,this.difficulty); // making some of the shielding attempts fail on purpose
         }
         else if(Math.abs(this.yourPlayer.x - this.enemyPlayer.x) > this.yourPlayer.punch.width){
-            if(this.chooseRandomAction(true,false,0.8)){ // make the trainer play slower
+            if(this.chooseRandomAction(true,false,this.difficulty + this.difficulty/10)){ // make the trainer play slower
+                let odds = 0.99;
+                if(this.difficulty <= 0.1) odds = 1;
 
                 // getting closer to the enemy or shooting him
                 if(this.yourPlayer.x - this.enemyPlayer.x < 0){
-                    action = this.chooseRandomAction(Commands.RUNRIGHT,Commands.SHOOT,0.99);
+                    action = this.chooseRandomAction(Commands.RUNRIGHT,Commands.SHOOT,odds);
                 }
                 else{
-                    action = this.chooseRandomAction(Commands.RUNLEFT,Commands.SHOOT,0.99);
+                    action = this.chooseRandomAction(Commands.RUNLEFT,Commands.SHOOT,odds);
                 }
             }
         }
         else{
             // changing direction towards the enemy
-            if(this.yourPlayer.direction === -1 && this.yourPlayer.x - this.enemyPlayer.x < 0){
+            if(this.yourPlayer.direction === -1 && this.yourPlayer.x - this.enemyPlayer.x < -5){
                action = Commands.RUNRIGHT;
             }
-            else if(this.yourPlayer.direction === 1 && this.yourPlayer.x - this.enemyPlayer.x > 0){
+            else if(this.yourPlayer.direction === 1 && this.yourPlayer.x - this.enemyPlayer.x > 5){
                 action = Commands.RUNRIGHT;
+            }
+            else if(this.yourPlayer.x - this.enemyPlayer.x < 10 && this.yourPlayer.x - this.enemyPlayer.x > -10){
+                if(this.yourPlayer.x <= this.game.width/2)
+                    action = Commands.RUNRIGHT;
+                else
+                    action = Commands.RUNLEFT;
             }
             // punch when the direction is towards the enemy
             else{
-                action = this.chooseRandomAction(Commands.PUNCH,null,0.7);
+                action = this.chooseRandomAction(Commands.PUNCH,null,this.difficulty);
             }
         }
 

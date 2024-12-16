@@ -42,7 +42,7 @@ export class Standing extends State { // normal speed = 0
         this.player.image = this.player.imageCharacter1;
         this.player.frameX = 0;
         this.player.maxFrame = 5;
-        this.player.frameY = 0;
+        this.player.frameY = 0; 
     }
     handleInput(input){
 
@@ -162,7 +162,6 @@ export class Punching extends State {
         }
         this.rightHook = !this.rightHook;
         this.player.frameX = 0;
-
         this.player.launchPunch();
     }
     handleInput(input){
@@ -170,7 +169,7 @@ export class Punching extends State {
         // make the character finish the animation   
         if(this.player.frameX < this.player.maxFrame || !this.player.onGround())  return;
 
-        if(input.length===0){
+        if(input.length===0 || input.includes(Commands.PUNCH)){
             this.player.setState(states.STANDING,playerSpeeds.NoSpeed);
         }
         else if(input.includes(Commands.RUNLEFT)||input.includes(Commands.RUNRIGHT)){
@@ -215,7 +214,7 @@ export class Shooting extends State {
         if(this.player.frameX < this.player.maxFrame) return;
 
 
-        if(input.length===0){
+        if(input.length===0 || input.includes(Commands.SHOOT)){
             this.player.setState(states.STANDING,playerSpeeds.NoSpeed);
         }
         else if(input.includes(Commands.RUNLEFT)||input.includes(Commands.RUNRIGHT)){
