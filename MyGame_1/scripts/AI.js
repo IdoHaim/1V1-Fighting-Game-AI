@@ -237,7 +237,10 @@ export class QLearningWithFunctionApprox {
         this.yourPlayer.punch.AIid = this.game.gameTime;
 
         //punishing the ai for unnecessary punches
-        if(Math.abs(this.yourPlayer.x - this.enemyPlayer.x)>this.yourPlayer.width+this.yourPlayer.offsetX){
+        if(Math.abs(this.yourPlayer.x - this.enemyPlayer.x)>this.yourPlayer.width+this.yourPlayer.offsetX ||
+        this.yourPlayer.direction === -1 && this.yourPlayer.x - this.enemyPlayer.x <= 0 ||
+        this.yourPlayer.direction === 1 && this.yourPlayer.x - this.enemyPlayer.x >= 0){
+            
             this.updateWeights(this.previousFeatures,    
                 action,                 
                 -Rewards[1],                        
@@ -245,6 +248,7 @@ export class QLearningWithFunctionApprox {
         }
        }
        else if(action === Commands.SHOOT){
+           
         this.updateWeights(this.previousFeatures,
             Commands.SHOOT,                 
             this.calculateShootReward(),                        
@@ -253,6 +257,7 @@ export class QLearningWithFunctionApprox {
        // rewarding the ai for getting closer to the enemy
        else if((action === Commands.RUNRIGHT && this.yourPlayer.x - this.enemyPlayer.x < -this.yourPlayer.punch.width)||
        (action === Commands.RUNLEFT && this.yourPlayer.x - this.enemyPlayer.x > this.yourPlayer.punch.width)){
+           
         this.updateWeights(this.previousFeatures,    
             action,                 
             Rewards[1],                        
