@@ -40,7 +40,7 @@ export class AI_trainer{
         }
         else if(Math.abs(this.yourPlayer.x - this.enemyPlayer.x) > this.yourPlayer.punch.width){
             if(this.chooseRandomAction(true,false,this.difficulty + this.difficulty/10)){ // make the trainer play slower
-                let odds = 0.99;
+                let odds = 0.9;
                 if(this.difficulty <= 0.1) odds = 1;
 
                 // getting closer to the enemy or shooting him
